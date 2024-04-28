@@ -1,5 +1,8 @@
 import { Link } from "react-router-dom"
 import styles from "../styles/button.module.scss"
+import { audio } from "utils/AudioManager"
+import ClickSFX from "../../assets/sfx/button.wav"
+import { PropsWithChildren } from "react"
 
 interface PropsButton {
 	onClick: ()=>void
@@ -9,7 +12,6 @@ interface PropsLink {
 }
 
 type Props = {
-	children: any
 	className?: string
 	[key: string]: any
 } & (PropsButton | PropsLink)
@@ -17,10 +19,15 @@ type Props = {
 /**
  * A button or Link already styled
  */
-const MenuButton = ({children, onClick, to, className, ...props}: Props) => {
+const MenuButton = ({children, onClick, to, className, ...props}: PropsWithChildren<Props>) => {
+	const action = () => {
+    audio.playSE(ClickSFX)
+    onClick?.()
+  }
+	
 	const button = onClick ? (
 		<button
-			onClick={onClick}
+			onClick={action}
 			className={`${styles.menuBtn} menu-btn ${className || ""}`}
 			{...props}>
 			{children}
@@ -28,6 +35,7 @@ const MenuButton = ({children, onClick, to, className, ...props}: Props) => {
 	) : (
 		<Link
 			to={to}
+			onClick={action}
 			className={`${styles.menuBtn} menu-btn ${className || ""}`}
 			{...props}>
 			{children}
